@@ -1,6 +1,6 @@
 package org.neoflex.model
 
-case class ClientCompany (before: Option[ClientCompany.Value], after: Option[ClientCompany.Value], operation: String)
+case class ClientCompany (before: Option[ClientCompany.Value], after: Option[ClientCompany.Value], op: String)
 
 object ClientCompany {
 

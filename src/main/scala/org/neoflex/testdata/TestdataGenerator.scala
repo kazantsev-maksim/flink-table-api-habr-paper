@@ -2,12 +2,11 @@ package org.neoflex.testdata
 
 import com.github.javafaker.Faker
 import org.neoflex.Const.Command
-import org.neoflex.model.{ Client, ClientCompany, Payment }
-import org.neoflex.model.Client.Value
+import org.neoflex.model.{Client, ClientCompany, Payment}
 
 import java.time.Instant
-import scala.util.Random
 import scala.collection.immutable
+import scala.util.Random
 
 sealed trait TestdataGenerator {
 
@@ -29,14 +28,14 @@ sealed trait TestdataGenerator {
 
   def genNewPayments(count: Int): immutable.Seq[Payment] = {
     (1 to count).map { id =>
-      val value = Payment.Value(id, Random.nextInt(1000000), Instant.now())
-      Payment(Some(value), None, Command.Insert)
+      val value = Payment.Value(id, Random.nextInt(1000000), Instant.now().toEpochMilli)
+      Payment(None, Some(value), Command.Insert)
     }
   }
 
   def genUpdatePayments(count: Int): immutable.Seq[Payment] = {
     (1 to count).map { id =>
-      val value = Payment.Value(id, Random.nextInt(1000000), Instant.now())
+      val value = Payment.Value(id, Random.nextInt(1000000), Instant.now().toEpochMilli)
       Payment(None, Some(value), Command.Update)
     }
   }

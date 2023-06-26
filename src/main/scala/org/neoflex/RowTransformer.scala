@@ -24,7 +24,7 @@ object RowTransformer {
 
   implicit case object ClientRow extends RowTransformer[Client] {
     override def toRow(entity: Client): Option[Row] = {
-      val kind   = kindOf(entity.operation)
+      val kind   = kindOf(entity.op)
       val record = entity.before.orElse(entity.after)
       record.map(r => Row.ofKind(kind, Int.box(r.clientId), r.name, r.surname, r.patronymic.orNull, r.sex))
     }
@@ -38,21 +38,21 @@ object RowTransformer {
 
   implicit case object PaymentRow extends RowTransformer[Payment] {
     override def toRow(entity: Payment): Option[Row] = {
-      val kind   = kindOf(entity.operation)
+      val kind   = kindOf(entity.op)
       val record = entity.before.orElse(entity.after)
-      record.map(r => Row.ofKind(kind, Int.box(r.clientId), Int.box(r.amount), r.timestamp))
+      record.map(r => Row.ofKind(kind, Int.box(r.clientId), Int.box(r.amount), Long.box(r.tmMs)))
     }
 
     override implicit def typeInformation: TypeInformation[Row] = {
-      Types.ROW_NAMED(fieldsName, Types.INT, Types.INT, Types.INSTANT)
+      Types.ROW_NAMED(fieldsName, Types.INT, Types.INT, Types.LONG)
     }
 
-    override protected val fieldsName: Array[String] = Array("clientId", "amount", "timestamp")
+    override protected val fieldsName: Array[String] = Array("clientId", "amount", "tmMs")
   }
 
   implicit case object ClientCompanyRow extends RowTransformer[ClientCompany] {
     override def toRow(entity: ClientCompany): Option[Row] = {
-      val kind   = kindOf(entity.operation)
+      val kind   = kindOf(entity.op)
       val record = entity.before.orElse(entity.after)
       record.map { r =>
         Row.ofKind(

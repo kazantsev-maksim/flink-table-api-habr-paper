@@ -4,7 +4,7 @@ import io.circe.generic.auto._
 object TestdataApp {
   def main(args: Array[String]): Unit = {
     val clients   = TestdataGenerator.genNewClients(10)
-    val companies = TestdataGenerator.genNewCompanies(7)
+    val companies = TestdataGenerator.genNewCompanies(10)
     val payments  = TestdataGenerator.genNewPayments(7)
 
     clients.foreach(TestKafkaProducer.produce("clients", _))

@@ -106,19 +106,19 @@ object Serde {
 Мы немного упростим себе задачу, сымитируем поведение _CDC_-канала, отправляя сообщения требуемого формата напрямую в топик _Kafka_:
 
 ```scala
-case class Client (before: Option[Client.Value], after: Option[Client.Value], operation: String)
+case class Client (before: Option[Client.Value], after: Option[Client.Value], op: String)
 
 object Client {
   case class Value(clientId: Int, name: String, surname: String, patronymic: Option[String], sex: String)
 }
 
-case class ClientCompany (before: Option[ClientCompany.Value], after: Option[ClientCompany.Value], operation: String)
+case class ClientCompany (before: Option[ClientCompany.Value], after: Option[ClientCompany.Value], op: String)
 
 object ClientCompany {
   case class Value(clientId: Int, companyId: Int, companyName: String)
 }
 
-case class Payment (before: Option[Payment.Value], after: Option[Payment.Value], operation: String)
+case class Payment (before: Option[Payment.Value], after: Option[Payment.Value], op: String)
 
 object Payment {
   case class Value(clientId: Int, amount: Int, timestamp: Instant)
@@ -196,6 +196,53 @@ implicit case object ClientRow extends RowTransformer[Client] {
 val clients: Table = KafkaConsumerSource.configureKafkaDataSource[Client]("clients")
   .toStreamTable("clientId")
 ```
+Это далеко не единственный способ создания таблиц, если мы изначально хотим работать с данными как с таблицей, необязательно сперва представлять данные в виде _DataStream_:
+```scala
+tableEnv.createTable(
+  "companies",
+  TableDescriptor
+    .forConnector("kafka")
+    .schema(
+      Schema
+        .newBuilder()
+        .column("clientId", DataTypes.INT().notNull())
+        .column("companyId", DataTypes.INT().notNull())
+        .column("companyName", DataTypes.STRING().notNull())
+        .primaryKey("clientId")
+        .build()
+    )
+    .option(KafkaConnectorOptions.TOPIC, Seq("companies").asJava)
+    .option(KafkaConnectorOptions.PROPS_BOOTSTRAP_SERVERS, Kafka.BootstrapServers)
+    .option(KafkaConnectorOptions.PROPS_GROUP_ID, "companies-group")
+    .option(KafkaConnectorOptions.SCAN_STARTUP_MODE, KafkaConnectorOptions.ScanStartupMode.EARLIEST_OFFSET)
+    .option(KafkaConnectorOptions.VALUE_FORMAT, "debezium-json")
+    .build()
+)
+
+val companies: Table = tableEnv.sqlQuery("SELECT * FROM companies")
+
+companies.print("Companies")
+```
+И конечно же куда без _SQL_:
+```scala
+tableEnv.executeSql(
+  """
+    |CREATE TABLE payments (clientId INT NOT NULL, amount INT NOT NULL, tmMs BIGINT NOT NULL)
+    |WITH (
+    | 'connector' = 'kafka',
+    | 'topic' = 'payments',
+    | 'properties.bootstrap.servers' = 'localhost:9092',
+    | 'properties.group.id' = 'payments-group',
+    | 'scan.startup.mode' = 'earliest-offset',
+    | 'format' = 'debezium-json'
+    |)
+    |""".stripMargin)
+
+val payments: Table = tableEnv.sqlQuery("SELECT * FROM payments")
+
+payments.print("Payments")
+```
+
 Мы окончательно подготовились к написанию основной логики. Для нашей задачи будем использовать _inner join_, т.е. при получении нового события мы будем выдавать результат во _внешнюю систему_ только в случае наличия данных по ключу во всех таблицах.
 
 ```scala
