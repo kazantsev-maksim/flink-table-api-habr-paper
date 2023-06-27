@@ -1,16 +1,16 @@
 package org.neoflex
 
 import io.circe.generic.auto._
-import org.apache.flink.api.common.state.{ ValueState, ValueStateDescriptor }
+import org.apache.flink.api.common.state.{ValueState, ValueStateDescriptor}
 import org.apache.flink.configuration.Configuration
-import org.apache.flink.streaming.api.functions.{ KeyedProcessFunction, ProcessFunction }
-import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction
+import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
 import org.apache.flink.util.Collector
-import org.neoflex.model.{ Client, ClientCompany, Payment, Portfolio }
+import org.neoflex.model.{Client, ClientCompany, Payment, Portfolio}
 import org.neoflex.source.KafkaConsumerSource
 
 object StateApiJob {
+
   def main(args: Array[String]): Unit = {
     implicit val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
@@ -48,7 +48,7 @@ case class PortfolioState(
         company.companyId,
         company.companyName,
         payment.amount,
-        payment.timestamp
+        payment.tmMs
       )
     }
   }

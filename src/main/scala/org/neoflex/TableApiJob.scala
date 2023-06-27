@@ -14,7 +14,8 @@ object TableApiJob {
     implicit val env: StreamExecutionEnvironment  = StreamExecutionEnvironment.getExecutionEnvironment
     implicit val tableEnv: StreamTableEnvironment = StreamTableEnvironment.create(env)
 
-    val clients = KafkaConsumerSource.configureKafkaDataSource[Client]("clients")
+    val clients = KafkaConsumerSource
+      .configureKafkaDataSource[Client]("clients")
       .toStreamTable("clientId")
       .renameColumns($"clientId".as("client.clientId"))
 

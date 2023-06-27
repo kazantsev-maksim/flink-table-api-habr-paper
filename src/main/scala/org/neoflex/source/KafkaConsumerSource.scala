@@ -17,7 +17,7 @@ import scala.reflect.{ classTag, ClassTag }
 
 sealed trait KafkaConsumerSource {
 
-  private def configure[A: Decoder: ClassTag](bootstrapServers: String, topicName: String): KafkaSource[A] = {
+  def configure[A: Decoder: ClassTag](bootstrapServers: String, topicName: String): KafkaSource[A] = {
     KafkaSource
       .builder()
       .setBootstrapServers(bootstrapServers)

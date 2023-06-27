@@ -9,4 +9,4 @@ case class Portfolio(
   companyId: Int,
   companyName: String,
   amount: Int,
-  timestamp: Instant)
+  tmMs: Long)

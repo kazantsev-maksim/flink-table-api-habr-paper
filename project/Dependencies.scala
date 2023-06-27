@@ -24,6 +24,7 @@ object Dependencies {
     val TableApi       = "org.apache.flink" %% "flink-table-api-scala"        % Version.Flink
     val TableApiBridge = "org.apache.flink" %% "flink-table-api-scala-bridge" % Version.Flink
     val Planner        = "org.apache.flink" %% "flink-table-planner"          % Version.Flink
+    val Json           = "org.apache.flink" % "flink-json"                    % Version.Flink
 
     lazy val All: Seq[ModuleID] =
       Seq(
@@ -35,7 +36,8 @@ object Dependencies {
         TableCommon,
         TableApi,
         TableApiBridge,
-        Planner
+        Planner,
+        Json
       )
   }
 

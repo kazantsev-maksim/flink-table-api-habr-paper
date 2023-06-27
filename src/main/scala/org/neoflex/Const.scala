@@ -7,7 +7,7 @@ object Const {
   }
 
   object Command {
-    val Insert = "i"
+    val Insert = "c"
     val Delete = "d"
     val Update = "u"
   }
