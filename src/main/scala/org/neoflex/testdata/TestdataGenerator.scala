@@ -36,14 +36,14 @@ sealed trait TestdataGenerator {
   def genUpdatePayments(count: Int): immutable.Seq[Payment] = {
     (1 to count).map { id =>
       val value = Payment.Value(id, Random.nextInt(1000000), Instant.now().toEpochMilli)
-      Payment(None, Some(value), Command.Update)
+      Payment(Some(value), Some(value), Command.Update)
     }
   }
 
   def genUpdateCompanies(count: Int): immutable.Seq[ClientCompany] = {
     (1 to count).map { id =>
       val value = ClientCompany.Value(id, id + id + id, s"company${id + id + id}")
-      ClientCompany(None, Some(value), Command.Update)
+      ClientCompany(Some(value), Some(value), Command.Update)
     }
   }
 
