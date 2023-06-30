@@ -27,11 +27,11 @@
 
 3. _Payment_ - информация о платежах клиента:
 
-| Имя поля  | Тип поля  | Описание                         |
-|:----------|:----------|:---------------------------------|
-| clientId  | int       | уникальный идентификатор клиента |
-| amount    | int       | сумма платежа                    |
-| timestamp | timestamp | время свершения платежа          |
+| Имя поля | Тип поля | Описание                         |
+|:---------|:---------|:---------------------------------|
+| clientId | int      | уникальный идентификатор клиента |
+| amount   | int      | сумма платежа                    |
+| tmMs     | long     | время свершения платежа          |
 
 Будем получать обновления по всем таблицам через [CDC](https://ru.wikipedia.org/wiki/Захват_изменения_данных)-канал (пусть это будет [Debezium](https://debezium.io/)) в топик [Kafka](https://kafka.apache.org/) в формате [Json](https://www.json.org/json-en.html). Задачей нашей _Job_-ы будет слушать топики и выдавать обновления по клиенту (например: клиент сменил компанию) во внешнюю систему (в рамках статьи в качестве внешней системы будем использовать консоль вывода).
 
@@ -121,7 +121,7 @@ object ClientCompany {
 case class Payment (before: Option[Payment.Value], after: Option[Payment.Value], op: String)
 
 object Payment {
-  case class Value(clientId: Int, amount: Int, timestamp: Instant)
+  case class Value(clientId: Int, amount: Int, tmMs: Long)
 }
 
 ```
