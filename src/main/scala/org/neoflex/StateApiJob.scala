@@ -21,7 +21,7 @@ object StateApiJob {
     clients
       .union(companies)
       .union(payments)
-      .keyBy(_.id) // шардиурем данные по полю id (clientId)
+      .keyBy(_.id)
       .process(new PortfolioStateProcessor())
       .print("Portfolio")
 
